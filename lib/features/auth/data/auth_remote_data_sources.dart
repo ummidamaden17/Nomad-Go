@@ -1,42 +1,64 @@
-import 'package:flutter_clean_architecture_practise/core/error/exception.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract interface class AuthRemoteDataSource {
-  Future<String> signUpWithEmailPassword(
-      {required String name, required String email, required String password});
+  Future<UserCredential> signUpWithEmailPassword({
+    required String name,
+    required String email,
+    required String password,
+  });
 
-  Future<String> logInWithEmailPassword(
-      {required String email, required String password});
+  Future<UserCredential> logInWithEmailPassword({
+    required String email,
+    required String password,
+  });
 }
 
 class AuthRemoteDataSourcesImpl implements AuthRemoteDataSource {
-  final SupabaseClient supabaseClient;
-  AuthRemoteDataSourcesImpl(this.supabaseClient);
-  @override
-  Future<String> signUpWithEmailPassword(
-      // TODO: implement signUpWithEmailPassword
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-      {required String name,
-      required String email,
-      required String password}) async {
+  @override
+  Future<UserCredential> signUpWithEmailPassword({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
     try {
-      final response = await supabaseClient.auth
-          .signUp(password: password, email: email, data: {
-        'name': name,
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'email': email,
+        'userName': name,
+        'createdAt': Timestamp.now(),
       });
-      if (response.user == null) {
-        throw const ServerException("USer is Null!");
-      }
-      return response.user!.id;
-    } catch (e) {
-      throw ServerException(e.toString());
+
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(
+        code: e.code,
+        message: e.message,
+      );
     }
   }
 
   @override
-  Future<String> logInWithEmailPassword(
-      {required String email, required String password}) {
-    // TODO: implement logInWithEmailPassword
-    throw UnimplementedError();
+  Future<UserCredential> logInWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      return await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      throw FirebaseAuthException(
+        code: e.code,
+        message: e.message,
+      );
+    }
   }
 }

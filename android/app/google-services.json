@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864145991964",
+    "project_id": "nomadgo-b32de",
+    "storage_bucket": "nomadgo-b32de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864145991964:android:b653a05d408277d45eb2d9",
+        "android_client_info": {
+          "package_name": "com.example.flutter_clean_architecture_practise"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCdDF7jQd8EQa4Ew2Q1I04aCs1DarIKME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

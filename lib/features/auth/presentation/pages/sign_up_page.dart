@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_clean_architecture_practise/core/app_pallet.dart';
+import 'package:flutter_clean_architecture_practise/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_clean_architecture_practise/features/auth/presentation/pages/log_in_page.dart';
 import 'package:flutter_clean_architecture_practise/features/auth/presentation/widgets/auth_field.dart';
 import 'package:flutter_clean_architecture_practise/features/auth/presentation/widgets/auth_gradient_button.dart';
 
 class SignUpPage extends StatefulWidget {
-  static Route<MaterialPageRoute> get route => MaterialPageRoute(builder: (context)=> const SignUpPage());
+  static Route<MaterialPageRoute> get route =>
+      MaterialPageRoute(builder: (context) => const SignUpPage());
 
   const SignUpPage({super.key});
 
@@ -26,8 +29,8 @@ class _SignUpPageState extends State<SignUpPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,40 +44,66 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               const Text(
                 "Sign Up.",
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold
-                ),
-                ),
-                const SizedBox(height: 30,),
-                AuthField(hintText: "Name", controller: nameController,),
-                const SizedBox(height: 15,),
-                AuthField(hintText: "Email", controller: emailController,),
-                const SizedBox(height: 15,),
-                AuthField(hintText: "Password", controller: passwordController, isObscure: true,),
-                const SizedBox(height: 20,),
-                const AuthGradientButton(buttonText: "Sign Up",),
-                const SizedBox(height: 20,),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, LogInPage.route);
-                  },
-                  child: RichText(
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              AuthField(
+                hintText: "Name",
+                controller: nameController,
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              AuthField(
+                hintText: "Email",
+                controller: emailController,
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              AuthField(
+                hintText: "Password",
+                controller: passwordController,
+                isObscure: true,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              AuthGradientButton(
+                buttonText: "Sign Up",
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    context.read<AuthBloc>().add(AuthSignUpRequested(
+                        email: emailController.text.trim(),
+                        userName: nameController.text.trim(),
+                        password: passwordController.text.trim()));
+                  }
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context, LogInPage.route);
+                },
+                child: RichText(
                     text: TextSpan(
-                      text: "Already have an account? ",
-                      style: Theme.of(context).textTheme.titleMedium,
-                      children: [
-                        TextSpan(
+                        text: "Already have an account? ",
+                        style: Theme.of(context).textTheme.titleMedium,
+                        children: [
+                      TextSpan(
                           text: "Sign In",
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: AppPallete.gradient2,
-                            fontWeight: FontWeight.bold
-                          )
-                        )
-                      ]
-                    ) 
-                    ),
-                )
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                                  color: AppPallete.gradient2,
+                                  fontWeight: FontWeight.bold))
+                    ])),
+              )
             ],
           ),
         ),
